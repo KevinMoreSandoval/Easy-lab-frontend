@@ -1,0 +1,53 @@
+.wrapper {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  user-select: none;
+}
+
+.hiddenInput {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+}
+
+.box {
+  width: 18px;
+  height: 18px;
+  min-width: 18px;
+  border: 1.8px solid #c0c8d0;
+  border-radius: 4px;
+  background-color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background-color 0.18s ease, border-color 0.18s ease;
+}
+
+.box.checked {
+  background-color: var(--color-primary, #2A9D9F);
+  border-color: var(--color-primary, #2A9D9F);
+}
+
+.checkIcon {
+  width: 11px;
+  height: 9px;
+}
+
+.label {
+  font-size: 14px;
+  color: #4a4a4a;
+  font-weight: 400;
+}
+
+.wrapper:hover .box:not(.checked) {
+  border-color: var(--color-primary, #2A9D9F);
+}
+
+.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
