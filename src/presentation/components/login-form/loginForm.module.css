@@ -1,63 +1,101 @@
 .container {
-    max-width: 700px;
-    width: 45%;
-    height: 95%;
-    max-height: 700px;
-    border-radius: 20px;
+    width: min(100%, 660px);
+    max-height: none;
+    border-radius: 18px;
     background-color: var(--color-background);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-    padding: 2rem;
+    padding: clamp(1.75rem, 4vw, 2.75rem);
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 20px;
+    gap: clamp(1.15rem, 2.5vw, 1.75rem);
 }
-.textContainer{
+
+.container > p {
+    width: 100%;
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.4;
+    text-align: center;
+    overflow-wrap: anywhere;
+}
+
+.textContainer {
     width: 100%;
     display: flex;
+    align-items: center;
     justify-content: space-between;
+    gap: 1.25rem;
+    color: var(--color-text-secondary);
+    font-size: 0.95rem;
 }
+
 .title {
     text-align: center;
-    padding-top: 0.5rem;
-    font-size: clamp(1.5rem, 2vw, 2rem);
+    font-size: clamp(1.35rem, 2.2vw, 2rem);
     font-weight: 600;
+    line-height: 1.2;
+    color: var(--color-text-primary);
 }
-.span{
+
+.span {
     color: var(--color-primary);
     font-weight: 500;
+    white-space: nowrap;
 }
-.span:hover{
+
+.span:hover {
     text-decoration: underline;
     cursor: pointer;
 }
-/* Tablets */
-@media (max-width: 1024px) {
+
+.serverError {
+    width: 100%;
+    text-align: center;
+    color: var(--color-danger);
+    font-size: 0.85rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    background-color: rgba(231, 111, 81, 0.08);
+    border-radius: 8px;
+    border: 1px solid rgba(231, 111, 81, 0.2);
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+@media (max-height: 700px) and (min-width: 769px) {
     .container {
-        width: 60%;
+        gap: 1rem;
+        padding-block: 1.5rem;
     }
 }
 
-/* Tablets pequeñas */
 @media (max-width: 768px) {
     .container {
-        width: 80%;
-        height: auto;
-        min-height: 500px;
-        padding: 1.5rem;
+        width: min(100%, 520px);
+        border-radius: 16px;
+    }
+
+    .textContainer {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 0.95rem;
+    }
+
+    .span {
+        white-space: normal;
     }
 }
 
-/* Móviles */
 @media (max-width: 480px) {
     .container {
-        width: 95%;
-        min-height: auto;
-        border-radius: 16px;
-        padding: 1.25rem;
+        border-radius: 14px;
+        gap: 1rem;
+        padding: 1.5rem;
     }
 
     .title {
-        font-size: 1.4rem;
+        font-size: 1.3rem;
     }
+
 }

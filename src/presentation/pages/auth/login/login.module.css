@@ -1,12 +1,28 @@
 .container {
     width: 100%;
-    height: calc(100vh - 120px);
-    max-height: auto;
+    min-height: calc(100dvh - 120px);
     background-image: url("assets/img/banner.png");
-     background-size: cover;
+    background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
     display: flex;
     justify-content: center;
     align-items: center;
+    padding: clamp(1rem, 3vw, 2rem);
+    overflow-y: auto;
+}
+
+@media (max-width: 768px) {
+    .container {
+        min-height: calc(100dvh - 100px);
+        align-items: flex-start;
+        padding-block: 1.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .container {
+        min-height: calc(100dvh - 80px);
+        padding: 1rem;
+    }
 }

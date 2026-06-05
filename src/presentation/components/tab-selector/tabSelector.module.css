@@ -19,7 +19,7 @@
   border: none;
   outline: none;
   cursor: pointer;
-  padding: 14px 24px 12px;
+  padding: 14px clamp(10px, 2vw, 24px) 12px;
   font-size: 15px;
   font-weight: 400;
   color: #888;
@@ -69,11 +69,27 @@
 }
 
 @media (max-width: 480px) {
+  .tabContainer {
+    border-bottom: 0;
+    gap: 6px;
+  }
+
   .tab {
     min-height: 42px;
-    padding: 10px 8px 9px;
+    padding: 10px 8px;
     font-size: 13px;
     white-space: normal;
     overflow-wrap: anywhere;
+    border: 1px solid #e0e0e0;
+    border-radius: 10px;
+  }
+
+  .tab.active {
+    border-color: #2A9D9F;
+    background-color: rgba(42, 157, 159, 0.08);
+  }
+
+  .indicator {
+    display: none;
   }
 }
