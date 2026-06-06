@@ -1,0 +1,113 @@
+.container {
+  padding: 24px;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+.header {
+  margin-bottom: 24px;
+}
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1e293b;
+  margin: 0 0 4px 0;
+}
+.subtitle {
+  color: #64748b;
+  margin: 0;
+}
+.card {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  border: 1px solid #e2e8f0;
+  padding: 24px;
+}
+.btnPrimary {
+  background-color: #2da197;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btnPrimary:hover {
+  background-color: #24827a;
+}
+.btnSecondary {
+  background-color: #f1f5f9;
+  color: #475569;
+  padding: 10px 20px;
+  border-radius: 6px;
+  border: none;
+  font-weight: 500;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btnSecondary:hover {
+  background-color: #e2e8f0;
+}
+.formTitle {
+  font-size: 18px;
+  font-weight: 600;
+  color: #334155;
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 20px;
+}
+.inputGroup {
+  display: flex;
+  flex-direction: column;
+}
+.label {
+  font-size: 14px;
+  font-weight: 500;
+  color: #475569;
+  margin-bottom: 6px;
+}
+.input {
+  padding: 10px 12px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  outline: none;
+  font-size: 14px;
+}
+.input:focus {
+  border-color: #2da197;
+}
+.buttonGroup {
+  margin-top: 30px;
+  display: flex;
+  gap: 12px;
+}
+.headerTop {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+.btnBack {
+  background: none;
+  border: none;
+  font-size: 24px;
+  cursor: pointer;
+  color: #64748b;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: 0.2s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.btnBack:hover {
+  background-color: #e2e8f0;
+  color: #0f172a;
+}
+.header {
+  margin-bottom: 0; 
+}

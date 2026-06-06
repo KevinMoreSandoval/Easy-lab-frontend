@@ -5,6 +5,11 @@ import PacienteDashboard from "./presentation/pages/pacient";
 import MedicoDashboard from "./presentation/pages/medico";
 import RecepcionDashboard from "./presentation/pages/recepcionist";
 
+import RegistroPacientes from './presentation/pages/recepcionist/RegistroPacientes';
+import ConfirmacionLlegada from './presentation/pages/recepcionist/ConfirmacionLlegada';
+import CitasMedicas from './presentation/pages/recepcionist/CitasMedicas';
+import RecepcionLayout from './presentation/pages/recepcionist/RecepcionLayout';
+
 /**
  * Configuración principal de rutas de la aplicación.
  *
@@ -36,6 +41,17 @@ function App() {
         {/* Rutas protegidas: Recepción */}
         <Route element={<ProtectedRoute allowedRoles={["RECEPCION"]} />}>
           <Route path="/recepcion/dashboard" element={<RecepcionDashboard />} />
+        </Route>
+
+
+       {/* Rutas protegidas: Recepción */}
+        <Route element={<ProtectedRoute allowedRoles={["RECEPCION"]} />}>
+          <Route element={<RecepcionLayout />}>
+            <Route path="/recepcion/dashboard" element={<RecepcionDashboard />} />
+            <Route path="/recepcion/registro-pacientes" element={<RegistroPacientes />} />
+            <Route path="/recepcion/confirmacion-llegada" element={<ConfirmacionLlegada />} />
+            <Route path="/recepcion/citas-medicas" element={<CitasMedicas />} />
+          </Route>
         </Route>
 
         {/* Redirecciones */}
