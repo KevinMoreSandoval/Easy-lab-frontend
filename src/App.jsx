@@ -3,6 +3,10 @@ import { Login } from "./presentation/pages/auth";
 import ProtectedRoute from "./presentation/guards/ProtectedRoute";
 import AdminDashboard from "./presentation/pages/admin";
 import MedicoDashboard from "./presentation/pages/medico";
+import MedicoLayout from './presentation/pages/medico/MedicoLayout';
+import CrearOrden from './presentation/pages/medico/CrearOrden';
+import HistorialOrdenes from './presentation/pages/medico/HistorialOrdenes';
+
 import RecepcionDashboard from "./presentation/pages/recepcionist";
 
 import RegistroPacientes from './presentation/pages/recepcionist/RegistroPacientes';
@@ -33,9 +37,12 @@ function App() {
           <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Route>
 
-        {/* Rutas protegidas: Médico */}
         <Route element={<ProtectedRoute allowedRoles={["MEDICO"]} />}>
-          <Route path="/medico/dashboard" element={<MedicoDashboard />} />
+          <Route element={<MedicoLayout />}>
+            <Route path="/medico/dashboard" element={<MedicoDashboard />} />
+            <Route path="/medico/crear-orden" element={<CrearOrden />} />
+            <Route path="/medico/historial-ordenes" element={<HistorialOrdenes />} />
+          </Route>
         </Route>
 
         {/* Rutas protegidas: Recepción */}
@@ -44,7 +51,7 @@ function App() {
         </Route>
 
 
-       {/* Rutas protegidas: Recepción */}
+        {/* Rutas protegidas: Recepción */}
         <Route element={<ProtectedRoute allowedRoles={["RECEPCION"]} />}>
           <Route element={<RecepcionLayout />}>
             <Route path="/recepcion/dashboard" element={<RecepcionDashboard />} />
@@ -53,6 +60,9 @@ function App() {
             <Route path="/recepcion/citas-medicas" element={<CitasMedicas />} />
           </Route>
         </Route>
+
+
+
 
         {/* Redirecciones */}
         <Route path="/" element={<Navigate to="/login" replace />} />

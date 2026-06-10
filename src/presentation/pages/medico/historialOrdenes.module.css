@@ -1,0 +1,122 @@
+/* src/presentation/pages/medico/historialOrdenes.module.css */
+.container {
+  background: white;
+  padding: 32px;
+  border-radius: 8px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.title {
+  font-size: 20px;
+  color: #0f172a;
+  margin: 0;
+}
+.searchInput {
+  padding: 10px 14px;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  font-size: 14px;
+  width: 300px;
+  outline: none;
+}
+.searchInput:focus {
+  border-color: #2da197;
+}
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+}
+.table th {
+  color: #64748b;
+  padding: 12px 0;
+  border-bottom: 1px solid #e2e8f0;
+  font-weight: 500;
+  font-size: 14px;
+}
+.table td {
+  padding: 16px 0;
+  border-bottom: 1px solid #e2e8f0;
+  color: #334155;
+  font-size: 14px;
+}
+.id {
+  font-weight: 600;
+  color: #0f172a !important;
+}
+.badge {
+  padding: 4px 12px;
+  border-radius: 9999px;
+  font-size: 12px;
+  font-weight: 500;
+}
+.badgePendiente { background-color: #ffedd5; color: #c2410c; }
+.badgeVigente { background-color: #dcfce7; color: #15803d; }
+.badgeAtendida { background-color: #e2e8f0; color: #475569; }
+.btnAction {
+  background: none;
+  border: none;
+  color: #2da197;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 0;
+}
+.btnAction:hover {
+  text-decoration: underline;
+}
+
+
+
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(15, 23, 42, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+}
+.modal {
+  background: white;
+  padding: 32px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 400px;
+  box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+.modalTitle {
+  margin-top: 0;
+  margin-bottom: 16px;
+  color: #0f172a;
+  font-size: 18px;
+  border-bottom: 1px solid #e2e8f0;
+  padding-bottom: 12px;
+}
+.modalContent p {
+  margin: 8px 0;
+  color: #334155;
+}
+.btnClose {
+  margin-top: 24px;
+  width: 100%;
+  background-color: #f1f5f9;
+  color: #475569;
+  border: 1px solid #cbd5e1;
+  padding: 10px;
+  border-radius: 6px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: 0.2s;
+}
+.btnClose:hover {
+  background-color: #e2e8f0;
+}
