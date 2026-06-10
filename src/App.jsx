@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Login } from "./presentation/pages/auth";
 import ProtectedRoute from "./presentation/guards/ProtectedRoute";
-import PacienteDashboard from "./presentation/pages/pacient";
+import AdminDashboard from "./presentation/pages/admin";
 import MedicoDashboard from "./presentation/pages/medico";
 import RecepcionDashboard from "./presentation/pages/recepcionist";
 
@@ -15,7 +15,7 @@ import RecepcionLayout from './presentation/pages/recepcionist/RecepcionLayout';
  *
  * Estructura:
  *  /login                    → Página de login (pública)
- *  /paciente/dashboard       → Dashboard Paciente (protegida, rol PACIENTE)
+ *  /admin/dashboard          → Dashboard Administración (protegida, rol ADMIN)
  *  /medico/dashboard         → Dashboard Médico (protegida, rol MEDICO)
  *  /recepcion/dashboard      → Dashboard Recepción (protegida, rol RECEPCION)
  *  /                         → Redirige a /login
@@ -28,9 +28,9 @@ function App() {
         {/* Ruta pública */}
         <Route path="/login" element={<Login />} />
 
-        {/* Rutas protegidas: Paciente */}
-        <Route element={<ProtectedRoute allowedRoles={["PACIENTE"]} />}>
-          <Route path="/paciente/dashboard" element={<PacienteDashboard />} />
+        {/* Rutas protegidas: Administración */}
+        <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
+          <Route path="/admin/dashboard" element={<AdminDashboard />} />
         </Route>
 
         {/* Rutas protegidas: Médico */}

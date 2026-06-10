@@ -1,10 +1,10 @@
 const LOGIN_USER_CONFIG = {
-  Paciente: {
-    label: "Documento de identidad",
-    placeholder: "Ingresa tu documento de identidad",
-    type: "text",
+  Administración: {
+    label: "Correo institucional",
+    placeholder: "Ingresa tu correo institucional",
+    type: "email",
     validateIdentifier: (identifier) =>
-      /^\d{8}$/.test(identifier) ? "" : "El documento debe tener 8 dígitos.",
+      /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(identifier) ? "" : "Ingresa un correo válido.",
   },
   Médico: {
     label: "Código de colegiatura",
