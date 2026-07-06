@@ -2,6 +2,10 @@ import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Login } from "./presentation/pages/auth";
 import ProtectedRoute from "./presentation/guards/ProtectedRoute";
 import AdminDashboard from "./presentation/pages/admin";
+import AdminLayout from "./presentation/pages/admin/AdminLayout";
+import Usuarios from "./presentation/pages/admin/Usuarios";
+import PruebasLaboratorio from "./presentation/pages/admin/PruebasLaboratorio";
+import CrearPrueba from "./presentation/pages/admin/CrearPrueba";
 import MedicoDashboard from "./presentation/pages/medico";
 import MedicoLayout from './presentation/pages/medico/MedicoLayout';
 import CrearOrden from './presentation/pages/medico/CrearOrden';
@@ -34,7 +38,12 @@ function App() {
 
         {/* Rutas protegidas: Administración */}
         <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
-          <Route path="/admin/dashboard" element={<AdminDashboard />} />
+          <Route element={<AdminLayout />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/usuarios" element={<Usuarios />} />
+            <Route path="/admin/pruebas" element={<PruebasLaboratorio />} />
+            <Route path="/admin/crear-prueba" element={<CrearPrueba />} />
+          </Route>
         </Route>
 
         <Route element={<ProtectedRoute allowedRoles={["MEDICO"]} />}>
@@ -47,12 +56,6 @@ function App() {
 
         {/* Rutas protegidas: Recepción */}
         <Route element={<ProtectedRoute allowedRoles={["RECEPCION"]} />}>
-          <Route path="/recepcion/dashboard" element={<RecepcionDashboard />} />
-        </Route>
-
-
-        {/* Rutas protegidas: Recepción */}
-        <Route element={<ProtectedRoute allowedRoles={["RECEPCION"]} />}>
           <Route element={<RecepcionLayout />}>
             <Route path="/recepcion/dashboard" element={<RecepcionDashboard />} />
             <Route path="/recepcion/registro-pacientes" element={<RegistroPacientes />} />
@@ -60,9 +63,6 @@ function App() {
             <Route path="/recepcion/citas-medicas" element={<CitasMedicas />} />
           </Route>
         </Route>
-
-
-
 
         {/* Redirecciones */}
         <Route path="/" element={<Navigate to="/login" replace />} />
