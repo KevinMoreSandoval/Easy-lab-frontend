@@ -1,14 +1,28 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
+import { getPruebas } from "../../../infrastructure/api/pruebaApi";
 import styles from "./pruebasLaboratorio.module.css";
 
-const initialTests = [
-  { id: 1, nombre: "Hemograma completo", codigo: "HEM-001", categoria: "Hematologia", estado: "Activa" },
-  { id: 2, nombre: "Perfil lipidico", codigo: "BIO-004", categoria: "Bioquimica", estado: "Activa" },
-];
-
 export default function PruebasLaboratorio() {
-  const [pruebas] = useState(initialTests);
+  const [pruebas, setPruebas] = useState([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchPruebas();
+  }, []);
+
+  const fetchPruebas = async () => {
+    try {
+      setError(null);
+      const data = await getPruebas();
+      setPruebas(data);
+    } catch (err) {
+      setError(err.error || "Error al cargar las pruebas");
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <section className={styles.container}>
@@ -21,6 +35,12 @@ export default function PruebasLaboratorio() {
           Crear nueva prueba
         </Link>
       </div>
+
+      {error && (
+        <div style={{ padding: '12px', backgroundColor: '#fee2e2', color: '#b91c1c', borderRadius: '6px', marginBottom: '16px' }}>
+          {error}
+        </div>
+      )}
 
       <div className={styles.card}>
         <div className={styles.filterBar}>
@@ -38,21 +58,33 @@ export default function PruebasLaboratorio() {
               </tr>
             </thead>
             <tbody>
-              {pruebas.map((prueba) => (
-                <tr key={prueba.id}>
-                  <td>{prueba.nombre}</td>
-                  <td>{prueba.codigo}</td>
-                  <td>{prueba.categoria}</td>
-                  <td>
-                    <span className={styles.badge}>{prueba.estado}</span>
-                  </td>
-                  <td>
-                    <button className={styles.btnSecondary} style={{ padding: '6px 12px', fontSize: '12px' }}>
-                      Editar
-                    </button>
-                  </td>
+              {isLoading ? (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: 'center', padding: '1rem' }}>Cargando...</td>
                 </tr>
-              ))}
+              ) : pruebas.length > 0 ? (
+                pruebas.map((prueba) => (
+                  <tr key={prueba.id}>
+                    <td>{prueba.nombre}</td>
+                    <td>{prueba.codigo}</td>
+                    <td>{prueba.categoria}</td>
+                    <td>
+                      <span className={styles.badge} style={{ backgroundColor: prueba.activa ? '#ccfbf1' : '#fee2e2', color: prueba.activa ? '#0f766e' : '#991b1b' }}>
+                        {prueba.activa ? 'Activa' : 'Inactiva'}
+                      </span>
+                    </td>
+                    <td>
+                      <button className={styles.btnSecondary} style={{ padding: '6px 12px', fontSize: '12px' }}>
+                        Editar
+                      </button>
+                    </td>
+                  </tr>
+                ))
+              ) : (
+                <tr>
+                  <td colSpan="5" style={{ textAlign: 'center', padding: '1rem', color: '#64748b' }}>No hay pruebas registradas.</td>
+                </tr>
+              )}
             </tbody>
           </table>
         </div>

@@ -1,5 +1,6 @@
-import { useMemo, useState, useEffect } from "react";
+import { useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { createPrueba } from "../../../infrastructure/api/pruebaApi";
 import styles from "./pruebasLaboratorio.module.css";
 
 const initialForm = {
@@ -26,13 +27,6 @@ const initialForm = {
   videoUrl: "",
 };
 
-const mockCounts = {
-  "Bioquímica": 5,
-  "Hematología": 2,
-  "Microbiología": 1,
-  "Inmunología": 1
-};
-
 const categorias = ["Bioquímica", "Hematología", "Microbiología", "Inmunología"];
 const restricciones = [
   "Evitar alcohol",
@@ -57,24 +51,12 @@ const requisitosMuestra = [
 export default function CrearPrueba() {
   const navigate = useNavigate();
   const [form, setForm] = useState(initialForm);
-  const [codigoError, setCodigoError] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   const setField = (field, value) => {
     setForm((current) => ({ ...current, [field]: value }));
-    if (field === "codigo") setCodigoError("");
   };
-
-  useEffect(() => {
-    if (form.categoria) {
-      const prefix = form.categoria.substring(0, 3).toUpperCase();
-      const count = (mockCounts[form.categoria] || 0) + 1;
-      const orderStr = count.toString().padStart(3, '0');
-      setForm((prev) => ({ ...prev, codigo: `${prefix}-${orderStr}` }));
-      setCodigoError("");
-    } else {
-      setForm((prev) => ({ ...prev, codigo: "" }));
-    }
-  }, [form.categoria]);
 
   const toggleListValue = (field, value) => {
     setForm((current) => {
@@ -132,12 +114,17 @@ export default function CrearPrueba() {
     return items;
   }, [form]);
 
-  const handleSubmit = (event) => {
+  const handleSubmit = async (event) => {
     event.preventDefault();
-    // Simulate save and redirect back to catalog
-    // Note: Since we have no global state, it won't actually appear in the list.
-    // That's acceptable for this UI mock.
-    navigate("/admin/pruebas");
+    setIsLoading(true);
+    setError(null);
+    try {
+      await createPrueba(form);
+      navigate("/admin/pruebas");
+    } catch (err) {
+      setError(err.error || "Error al crear la prueba");
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -154,12 +141,16 @@ export default function CrearPrueba() {
 
       <div className={styles.formPreviewLayout}>
         <form className={styles.testForm} onSubmit={handleSubmit}>
+          {error && (
+            <div style={{ padding: '12px', backgroundColor: '#fee2e2', color: '#b91c1c', borderRadius: '6px', marginBottom: '16px' }}>
+              {error}
+            </div>
+          )}
           <section className={styles.card}>
             <h2 className={styles.cardTitle}>Información general</h2>
             <div className={styles.formGrid}>
               <label className={styles.field}>Nombre de la prueba<input value={form.nombre} onChange={(e) => setField("nombre", e.target.value)} required /></label>
-              <label className={styles.field}>Código interno de la prueba<input value={form.codigo} readOnly style={{ backgroundColor: '#e2e8f0', cursor: 'not-allowed', color: '#64748b' }} required placeholder="Generado automáticamente" /></label>
-              {codigoError && <p className={styles.fieldError}>{codigoError}</p>}
+              <label className={styles.field}>Código interno de la prueba<input value={form.codigo} readOnly style={{ backgroundColor: '#e2e8f0', cursor: 'not-allowed', color: '#64748b' }} placeholder="Generado por el servidor" /></label>
               <label className={styles.field}>Categoría<select value={form.categoria} onChange={(e) => setField("categoria", e.target.value)} required><option value="">Seleccionar</option>{categorias.map((categoria) => <option key={categoria}>{categoria}</option>)}</select></label>
               <label className={styles.switchField}>Estado de la prueba<input type="checkbox" checked={form.activa} onChange={(e) => setField("activa", e.target.checked)} /><span>{form.activa ? "Activa" : "Inactiva"}</span></label>
               <label className={`${styles.field} ${styles.fullWidth}`}>Descripción de la prueba<textarea value={form.descripcion} onChange={(e) => setField("descripcion", e.target.value)} rows="3" /></label>
@@ -213,8 +204,8 @@ export default function CrearPrueba() {
           </section>
 
           <div className={styles.actions}>
-            <button className={styles.btnSecondary} type="button" onClick={() => navigate("/admin/pruebas")}>Cancelar</button>
-            <button className={styles.btnPrimary} type="submit">Guardar prueba</button>
+            <button className={styles.btnSecondary} type="button" onClick={() => navigate("/admin/pruebas")} disabled={isLoading}>Cancelar</button>
+            <button className={styles.btnPrimary} type="submit" disabled={isLoading}>{isLoading ? "Guardando..." : "Guardar prueba"}</button>
           </div>
         </form>
 
