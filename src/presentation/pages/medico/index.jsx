@@ -1,13 +1,33 @@
+import { useState, useEffect } from 'react';
 import styles from "./medicoDashboard.module.css";
 
 export default function MedicoDashboard() {
+  const [ordenes, setOrdenes] = useState([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('easylab_ordenes');
+    if (saved) {
+      setOrdenes(JSON.parse(saved));
+    } else {
+      setOrdenes([
+        { id: 'ORD-001', paciente: 'Juan Carlos García López', pruebas: 'Hemograma Completo, Glucosa', fecha: '2026-06-11', estado: 'Pendiente' },
+        { id: 'ORD-002', paciente: 'María Elena Rodríguez Díaz', pruebas: 'Perfil Lipídico', fecha: '2026-06-10', estado: 'Vigente' },
+        { id: 'ORD-003', paciente: 'Pedro José Martínez Sánchez', pruebas: 'Examen General de Orina', fecha: '2026-06-08', estado: 'Atendida' }
+      ]);
+    }
+  }, []);
+
+  const pendientes = ordenes.filter(o => o.estado === 'Pendiente').length;
+  const atendidas = ordenes.filter(o => o.estado === 'Atendida').length;
+  const totalHoy = ordenes.length; // Simplified for this mock
+
   return (
     <>
       <div className={styles.statsGrid}>
         <div className={styles.statCard}>
           <div>
             <div className={styles.statTitle}>Órdenes generadas hoy</div>
-            <div className={styles.statValue}>12</div>
+            <div className={styles.statValue}>{totalHoy}</div>
           </div>
           <div className={`${styles.statIcon} ${styles.iconBlue}`}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{width: '24px', height: '24px'}}>
@@ -19,7 +39,7 @@ export default function MedicoDashboard() {
         <div className={styles.statCard}>
           <div>
             <div className={styles.statTitle}>Órdenes Pendientes</div>
-            <div className={styles.statValue}>5</div>
+            <div className={styles.statValue}>{pendientes}</div>
           </div>
           <div className={`${styles.statIcon} ${styles.iconOrange}`}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{width: '24px', height: '24px'}}>
@@ -31,7 +51,7 @@ export default function MedicoDashboard() {
         <div className={styles.statCard}>
           <div>
             <div className={styles.statTitle}>Órdenes Atendidas</div>
-            <div className={styles.statValue}>24</div>
+            <div className={styles.statValue}>{atendidas}</div>
           </div>
           <div className={`${styles.statIcon} ${styles.iconPurple}`}>
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{width: '24px', height: '24px'}}>
@@ -53,24 +73,18 @@ export default function MedicoDashboard() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td>Juan Carlos García López</td>
-              <td>Hemograma Completo, Glucosa</td>
-              <td>2026-06-11</td>
-              <td><span className={`${styles.badge} ${styles.badgePendiente}`}>Pendiente</span></td>
-            </tr>
-            <tr>
-              <td>María Elena Rodríguez Díaz</td>
-              <td>Perfil Lipídico, Triglicéridos</td>
-              <td>2026-06-10</td>
-              <td><span className={`${styles.badge} ${styles.badgeVigente}`}>Vigente</span></td>
-            </tr>
-            <tr>
-              <td>Pedro José Martínez Sánchez</td>
-              <td>Examen General de Orina</td>
-              <td>2026-06-08</td>
-              <td><span className={`${styles.badge} ${styles.badgeAtendida}`}>Atendida</span></td>
-            </tr>
+            {ordenes.slice(-5).reverse().map(orden => (
+              <tr key={orden.id}>
+                <td>{orden.paciente}</td>
+                <td>{orden.pruebas}</td>
+                <td>{orden.fecha}</td>
+                <td>
+                  <span className={`${styles.badge} ${orden.estado === 'Pendiente' ? styles.badgePendiente : orden.estado === 'Vigente' ? styles.badgeVigente : styles.badgeAtendida}`}>
+                    {orden.estado}
+                  </span>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>

@@ -10,13 +10,21 @@ export default function ConfirmacionLlegada() {
 
   const buscarPaciente = () => {
     if (dni.length > 0) {
-      setPaciente({
-        nombre: "Juan Carlos García López",
-        dni: dni,
-        horaCita: "09:00 AM",
-        medico: "Dr. Roberto Sánchez",
-        pruebas: ["Hemograma Completo", "Glucosa"]
-      });
+      const pacientes = JSON.parse(localStorage.getItem('easylab_pacientes') || '[]');
+      const pacienteEncontrado = pacientes.find(p => p.dni === dni);
+
+      if (pacienteEncontrado) {
+        setPaciente({
+          nombre: pacienteEncontrado.nombre,
+          dni: dni,
+          horaCita: "09:00 AM", // Mocked for now
+          medico: "Dr. Roberto Sánchez", // Mocked for now
+          pruebas: ["Hemograma Completo", "Glucosa"] // Mocked for now
+        });
+      } else {
+        alert("No se encontró ningún paciente registrado con ese DNI.");
+        setPaciente(null);
+      }
     }
   };
 

@@ -1,9 +1,26 @@
 
 
+import { useState, useEffect } from 'react';
 import styles from "./recepcionDashboard.module.css";
 
 export default function RecepcionDashboard() {
+  const [citas, setCitas] = useState([]);
 
+  useEffect(() => {
+    const saved = localStorage.getItem('easylab_citas');
+    if (saved) {
+      setCitas(JSON.parse(saved));
+    } else {
+      setCitas([
+        { id: 1, paciente: "Juan Carlos García López", medico: "Dr. Roberto Sánchez", fecha: "2026-06-05", hora: "09:00", estado: "Programada" },
+        { id: 2, paciente: "María Elena Rodríguez Díaz", medico: "Dra. Ana López", fecha: "2026-06-05", hora: "10:30", estado: "Confirmada" },
+        { id: 3, paciente: "Pedro José Martínez Sánchez", medico: "Dr. Carlos Ruiz", fecha: "2026-06-05", hora: "11:00", estado: "Programada" }
+      ]);
+    }
+  }, []);
+
+  const programadasHoy = citas.filter(c => c.estado === 'Programada').length;
+  const confirmadas = citas.filter(c => c.estado === 'Confirmada').length;
 
   return (
     <div className={styles.layout}>
@@ -26,7 +43,7 @@ export default function RecepcionDashboard() {
           <div className={styles.statCard}>
             <div>
               <div className={styles.statTitle}>Citas programadas hoy</div>
-              <div className={styles.statValue}>3</div>
+              <div className={styles.statValue}>{programadasHoy}</div>
             </div>
             <div className={`${styles.statIcon} ${styles.iconPurple}`}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '24px', height: '24px' }}>
@@ -50,7 +67,7 @@ export default function RecepcionDashboard() {
           <div className={styles.statCard}>
             <div>
               <div className={styles.statTitle}>Pacientes confirmados</div>
-              <div className={styles.statValue}>1</div>
+              <div className={styles.statValue}>{confirmadas}</div>
             </div>
             <div className={`${styles.statIcon} ${styles.iconGreen}`}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '24px', height: '24px' }}>
@@ -73,27 +90,19 @@ export default function RecepcionDashboard() {
               </tr>
             </thead>
             <tbody>
-              <tr>
-                <td>Juan Carlos García López</td>
-                <td>2026-06-05</td>
-                <td>09:00</td>
-                <td>Dr. Roberto Sánchez</td>
-                <td><span className={`${styles.badge} ${styles.badgePrimary}`}>Programada</span></td>
-              </tr>
-              <tr>
-                <td>María Elena Rodríguez Díaz</td>
-                <td>2026-06-05</td>
-                <td>10:30</td>
-                <td>Dra. Ana López</td>
-                <td><span className={`${styles.badge} ${styles.badgeSuccess}`}>Confirmada</span></td>
-              </tr>
-              <tr>
-                <td>Pedro José Martínez Sánchez</td>
-                <td>2026-06-05</td>
-                <td>11:00</td>
-                <td>Dr. Carlos Ruiz</td>
-                <td><span className={`${styles.badge} ${styles.badgePrimary}`}>Programada</span></td>
-              </tr>
+              {citas.map(cita => (
+                <tr key={cita.id}>
+                  <td>{cita.paciente}</td>
+                  <td>{cita.fecha}</td>
+                  <td>{cita.hora}</td>
+                  <td>{cita.medico}</td>
+                  <td>
+                    <span className={`${styles.badge} ${cita.estado === 'Confirmada' ? styles.badgeSuccess : styles.badgePrimary}`}>
+                      {cita.estado}
+                    </span>
+                  </td>
+                </tr>
+              ))}
             </tbody>
           </table>
         </div>

@@ -24,28 +24,42 @@ export default function RegistroPacientes() {
             + Nuevo Paciente
           </button>
         ) : (
-          <form>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const formData = new FormData(e.target);
+            const nuevoP = {
+              dni: formData.get('dni'),
+              nombre: formData.get('nombres') + ' ' + formData.get('apellidos'),
+              correo: formData.get('correo'),
+              telefono: formData.get('telefono')
+            };
+            const stored = JSON.parse(localStorage.getItem('easylab_pacientes') || '[]');
+            stored.push(nuevoP);
+            localStorage.setItem('easylab_pacientes', JSON.stringify(stored));
+            alert('Paciente guardado exitosamente.');
+            setMostrarForm(false);
+          }}>
             <h3 className={styles.formTitle}>Datos del Nuevo Paciente</h3>
             <div className={styles.grid}>
               <div className={styles.inputGroup}>
                 <label className={styles.label}>DNI *</label>
-                <input type="text" className={styles.input} required />
+                <input name="dni" type="text" className={styles.input} required />
               </div>
               <div className={styles.inputGroup}>
                 <label className={styles.label}>Nombres *</label>
-                <input type="text" className={styles.input} required />
+                <input name="nombres" type="text" className={styles.input} required />
               </div>
               <div className={styles.inputGroup}>
                 <label className={styles.label}>Apellidos *</label>
-                <input type="text" className={styles.input} required />
+                <input name="apellidos" type="text" className={styles.input} required />
               </div>
               <div className={styles.inputGroup}>
                 <label className={styles.label}>Correo Electrónico *</label>
-                <input type="email" className={styles.input} required />
+                <input name="correo" type="email" className={styles.input} required />
               </div>
               <div className={styles.inputGroup}>
                 <label className={styles.label}>Teléfono</label>
-                <input type="text" className={styles.input} />
+                <input name="telefono" type="text" className={styles.input} />
               </div>
             </div>
             

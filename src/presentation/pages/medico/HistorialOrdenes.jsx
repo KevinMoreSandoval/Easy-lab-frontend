@@ -1,8 +1,22 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import styles from './historialOrdenes.module.css';
 
 export default function HistorialOrdenes() {
   const [ordenDetalle, setOrdenDetalle] = useState(null);
+  const [ordenes, setOrdenes] = useState([]);
+
+  useEffect(() => {
+    const saved = localStorage.getItem('easylab_ordenes');
+    if (saved) {
+      setOrdenes(JSON.parse(saved));
+    } else {
+      setOrdenes([
+        { id: 'ORD-001', paciente: 'Juan Carlos García López', pruebas: 'Hemograma Completo, Glucosa', fecha: '2026-06-11', estado: 'Pendiente' },
+        { id: 'ORD-002', paciente: 'María Elena Rodríguez Díaz', pruebas: 'Perfil Lipídico', fecha: '2026-06-10', estado: 'Vigente' },
+        { id: 'ORD-003', paciente: 'Pedro José Martínez Sánchez', pruebas: 'Examen General de Orina', fecha: '2026-06-08', estado: 'Atendida' }
+      ]);
+    }
+  }, []);
 
   const verDetalle = (orden) => {
     setOrdenDetalle(orden);
@@ -30,51 +44,27 @@ export default function HistorialOrdenes() {
           </tr>
         </thead>
         <tbody>
-          <tr>
-            <td className={styles.id}>ORD-001</td>
-            <td>Juan Carlos García López</td>
-            <td>Hemograma Completo, Glucosa</td>
-            <td>2026-06-11</td>
-            <td><span className={`${styles.badge} ${styles.badgePendiente}`}>Pendiente</span></td>
-            <td>
-              <button 
-                className={styles.btnAction} 
-                onClick={() => verDetalle({ id: 'ORD-001', paciente: 'Juan Carlos García López', pruebas: 'Hemograma Completo, Glucosa', fecha: '2026-06-11', estado: 'Pendiente' })}
-              >
-                Ver detalle
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td className={styles.id}>ORD-002</td>
-            <td>María Elena Rodríguez Díaz</td>
-            <td>Perfil Lipídico</td>
-            <td>2026-06-10</td>
-            <td><span className={`${styles.badge} ${styles.badgeVigente}`}>Vigente</span></td>
-            <td>
-              <button 
-                className={styles.btnAction}
-                onClick={() => verDetalle({ id: 'ORD-002', paciente: 'María Elena Rodríguez Díaz', pruebas: 'Perfil Lipídico', fecha: '2026-06-10', estado: 'Vigente' })}
-              >
-                Ver detalle
-              </button>
-            </td>
-          </tr>
-          <tr>
-            <td className={styles.id}>ORD-003</td>
-            <td>Pedro José Martínez Sánchez</td>
-            <td>Examen General de Orina</td>
-            <td>2026-06-08</td>
-            <td><span className={`${styles.badge} ${styles.badgeAtendida}`}>Atendida</span></td>
-            <td>
-              <button 
-                className={styles.btnAction}
-                onClick={() => verDetalle({ id: 'ORD-003', paciente: 'Pedro José Martínez Sánchez', pruebas: 'Examen General de Orina', fecha: '2026-06-08', estado: 'Atendida' })}
-              >
-                Ver detalle
-              </button>
-            </td>
-          </tr>
+          {ordenes.map(orden => (
+            <tr key={orden.id}>
+              <td className={styles.id}>{orden.id}</td>
+              <td>{orden.paciente}</td>
+              <td>{orden.pruebas}</td>
+              <td>{orden.fecha}</td>
+              <td>
+                <span className={`${styles.badge} ${orden.estado === 'Pendiente' ? styles.badgePendiente : orden.estado === 'Vigente' ? styles.badgeVigente : styles.badgeAtendida}`}>
+                  {orden.estado}
+                </span>
+              </td>
+              <td>
+                <button 
+                  className={styles.btnAction} 
+                  onClick={() => verDetalle(orden)}
+                >
+                  Ver detalle
+                </button>
+              </td>
+            </tr>
+          ))}
         </tbody>
       </table>
 

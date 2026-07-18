@@ -7,11 +7,17 @@ export default function CitasMedicas() {
   const navigate = useNavigate();
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   
-  const [citas, setCitas] = useState([
-    { id: 1, paciente: "Juan Carlos García López", medico: "Dr. Roberto Sánchez", fecha: "2026-06-05", hora: "09:00", estado: "Programada" },
-    { id: 2, paciente: "María Elena Rodríguez Díaz", medico: "Dra. Ana López", fecha: "2026-06-05", hora: "10:30", estado: "Confirmada" },
-    { id: 3, paciente: "Pedro José Martínez Sánchez", medico: "Dr. Carlos Ruiz", fecha: "2026-06-05", hora: "11:00", estado: "Programada" }
-  ]);
+  const [citas, setCitas] = useState(() => {
+    const saved = localStorage.getItem('easylab_citas');
+    if (saved) {
+      return JSON.parse(saved);
+    }
+    return [
+      { id: 1, paciente: "Juan Carlos García López", medico: "Dr. Roberto Sánchez", fecha: "2026-06-05", hora: "09:00", estado: "Programada" },
+      { id: 2, paciente: "María Elena Rodríguez Díaz", medico: "Dra. Ana López", fecha: "2026-06-05", hora: "10:30", estado: "Confirmada" },
+      { id: 3, paciente: "Pedro José Martínez Sánchez", medico: "Dr. Carlos Ruiz", fecha: "2026-06-05", hora: "11:00", estado: "Programada" }
+    ];
+  });
 
   const [nuevoPaciente, setNuevoPaciente] = useState('');
   const [nuevoMedico, setNuevoMedico] = useState('Dr. Roberto Sánchez');
@@ -22,7 +28,7 @@ export default function CitasMedicas() {
     e.preventDefault();
     
     const nuevaCita = {
-      id: citas.length + 1,
+      id: citas.length > 0 ? Math.max(...citas.map(c => c.id)) + 1 : 1,
       paciente: nuevoPaciente,
       medico: nuevoMedico,
       fecha: nuevaFecha,
@@ -30,7 +36,9 @@ export default function CitasMedicas() {
       estado: "Programada"
     };
 
-    setCitas([...citas, nuevaCita]);
+    const nuevasCitas = [...citas, nuevaCita];
+    setCitas(nuevasCitas);
+    localStorage.setItem('easylab_citas', JSON.stringify(nuevasCitas));
     setMostrarFormulario(false);
 
     setNuevoPaciente('');
