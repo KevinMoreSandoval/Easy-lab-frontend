@@ -17,20 +17,6 @@ export default function AdminDashboard() {
       try {
         setError(null);
         const data = await getDashboardStats();
-        
-        // TEMPORARY MOCK: inject localStorage data until Backend is implemented
-        const savedOrdenes = localStorage.getItem('easylab_ordenes');
-        if (savedOrdenes) {
-          const ordenes = JSON.parse(savedOrdenes);
-          data.reservasDelMes = ordenes.length;
-          data.proximasReservas = ordenes.map(o => ({
-            paciente: o.paciente,
-            prueba: o.pruebas,
-            fecha: o.fecha,
-            estado: o.estado
-          })).slice(-5).reverse();
-        }
-
         setStats(data);
       } catch (err) {
         setError(err.error || "Error al cargar las estadísticas");

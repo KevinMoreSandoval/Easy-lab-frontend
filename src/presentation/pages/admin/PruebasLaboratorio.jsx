@@ -74,9 +74,13 @@ export default function PruebasLaboratorio() {
                       </span>
                     </td>
                     <td>
-                      <button className={styles.btnSecondary} style={{ padding: '6px 12px', fontSize: '12px' }}>
+                      <Link 
+                        to={`/admin/editar-prueba/${prueba.id}`}
+                        className={styles.btnSecondary} 
+                        style={{ padding: '6px 12px', fontSize: '12px', display: 'inline-block', textDecoration: 'none' }}
+                      >
                         Editar
-                      </button>
+                      </Link>
                     </td>
                   </tr>
                 ))

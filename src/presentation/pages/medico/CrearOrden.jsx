@@ -1,50 +1,80 @@
 // src/presentation/pages/medico/CrearOrden.jsx
+import { useState, useEffect } from 'react';
 import styles from './crearOrden.module.css';
+import { createOrden } from '../../../infrastructure/api/pacienteApi';
+import { apiRequest } from '../../../infrastructure/api/authApi';
 
 export default function CrearOrden() {
+  const [pruebas, setPruebas] = useState([]);
+  const [selectedPruebas, setSelectedPruebas] = useState([]);
+  const [saving, setSaving] = useState(false);
+
+  useEffect(() => {
+    // Load available tests from the backend
+    apiRequest('/pruebas')
+      .then(data => setPruebas(Array.isArray(data) ? data : []))
+      .catch(() => {
+        // Fallback if backend not running
+        setPruebas([
+          { id: 1, nombre: 'Hemograma Completo' },
+          { id: 2, nombre: 'Perfil Lipídico' },
+          { id: 3, nombre: 'Glucosa' },
+          { id: 4, nombre: 'Examen General de Orina' },
+          { id: 5, nombre: 'Triglicéridos' },
+          { id: 6, nombre: 'Colesterol Total' },
+        ]);
+      });
+  }, []);
+
+  const togglePrueba = (id) => {
+    setSelectedPruebas(prev =>
+      prev.includes(id) ? prev.filter(p => p !== id) : [...prev, id]
+    );
+  };
+
   return (
     <div className={styles.container}>
       <h2 className={styles.title}>Crear Orden Médica</h2>
-      <form className={styles.form} onSubmit={(e) => {
+      <form className={styles.form} onSubmit={async (e) => {
         e.preventDefault();
         const formData = new FormData(e.target);
-        const pruebas = [];
-        if (formData.get('hemograma')) pruebas.push('Hemograma Completo');
-        if (formData.get('perfil')) pruebas.push('Perfil Lipídico');
-        if (formData.get('glucosa')) pruebas.push('Glucosa');
-        if (formData.get('orina')) pruebas.push('Examen General de Orina');
-        if (formData.get('trigliceridos')) pruebas.push('Triglicéridos');
-        if (formData.get('colesterol')) pruebas.push('Colesterol Total');
 
-        const nuevaOrden = {
-          id: 'ORD-' + Math.floor(Math.random() * 1000).toString().padStart(3, '0'),
-          paciente: formData.get('paciente'),
-          pruebas: pruebas.join(', '),
-          fecha: formData.get('fecha'),
-          estado: 'Pendiente'
+        const req = {
+          pacienteDni: formData.get('paciente').trim(),
+          pruebaIds: selectedPruebas,
+          fechaEmision: formData.get('fecha'),
         };
 
-        const ordenes = JSON.parse(localStorage.getItem('easylab_ordenes') || '[]');
-        ordenes.push(nuevaOrden);
-        localStorage.setItem('easylab_ordenes', JSON.stringify(ordenes));
-        
-        alert('Orden generada exitosamente');
-        e.target.reset();
+        setSaving(true);
+        try {
+          await createOrden(req);
+          alert('Orden generada exitosamente');
+          e.target.reset();
+          setSelectedPruebas([]);
+        } catch (err) {
+          alert('Error al generar la orden: ' + (err.error || 'Error desconocido'));
+        } finally {
+          setSaving(false);
+        }
       }}>
         <div className={styles.formGroup}>
-          <label>Paciente</label>
-          <input name="paciente" type="text" placeholder="Buscar paciente por DNI o Nombre" className={styles.input} required />
+          <label>DNI del Paciente</label>
+          <input name="paciente" type="text" placeholder="Ingrese el DNI del paciente" className={styles.input} required />
         </div>
         
         <div className={styles.formGroup}>
           <label>Pruebas a realizar</label>
           <div className={styles.checkboxGroup}>
-            <label><input name="hemograma" type="checkbox" /> Hemograma Completo</label>
-            <label><input name="perfil" type="checkbox" /> Perfil Lipídico</label>
-            <label><input name="glucosa" type="checkbox" /> Glucosa</label>
-            <label><input name="orina" type="checkbox" /> Examen General de Orina</label>
-            <label><input name="trigliceridos" type="checkbox" /> Triglicéridos</label>
-            <label><input name="colesterol" type="checkbox" /> Colesterol Total</label>
+            {pruebas.map(p => (
+              <label key={p.id}>
+                <input
+                  type="checkbox"
+                  checked={selectedPruebas.includes(p.id)}
+                  onChange={() => togglePrueba(p.id)}
+                />
+                {' '}{p.nombre}
+              </label>
+            ))}
           </div>
         </div>
 
@@ -53,8 +83,10 @@ export default function CrearOrden() {
           <input name="fecha" type="date" className={styles.input} required />
         </div>
 
-        <button type="submit" className={styles.btnSubmit}>Generar Orden</button>
+        <button type="submit" disabled={saving} className={styles.btnSubmit}>
+          {saving ? 'Generando...' : 'Generar Orden'}
+        </button>
       </form>
     </div>
   );
-}
+}

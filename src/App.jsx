@@ -6,6 +6,7 @@ import AdminLayout from "./presentation/pages/admin/AdminLayout";
 import Usuarios from "./presentation/pages/admin/Usuarios";
 import PruebasLaboratorio from "./presentation/pages/admin/PruebasLaboratorio";
 import CrearPrueba from "./presentation/pages/admin/CrearPrueba";
+import EditarPrueba from "./presentation/pages/admin/EditarPrueba";
 import MedicoDashboard from "./presentation/pages/medico";
 import MedicoLayout from './presentation/pages/medico/MedicoLayout';
 import CrearOrden from './presentation/pages/medico/CrearOrden';
@@ -43,6 +44,7 @@ function App() {
             <Route path="/admin/usuarios" element={<Usuarios />} />
             <Route path="/admin/pruebas" element={<PruebasLaboratorio />} />
             <Route path="/admin/crear-prueba" element={<CrearPrueba />} />
+            <Route path="/admin/editar-prueba/:id" element={<EditarPrueba />} />
           </Route>
         </Route>
 
