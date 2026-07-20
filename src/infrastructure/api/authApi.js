@@ -7,7 +7,7 @@
  *  - Manejo de errores estandarizado.
  */
 
-const API_BASE_URL = "/api";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
 
 /**
  * Intenta parsear el cuerpo de la respuesta como JSON de forma segura.

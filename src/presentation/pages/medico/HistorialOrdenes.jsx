@@ -9,13 +9,8 @@ export default function HistorialOrdenes() {
   useEffect(() => {
     getOrdenes()
       .then(data => setOrdenes(data))
-      .catch(() => {
-        // Fallback data if backend not available
-        setOrdenes([
-          { id: 'ORD-001', paciente: 'Juan Carlos García López', pruebas: ['Hemograma Completo', 'Glucosa'], fecha: '2026-06-11', estado: 'PENDIENTE' },
-          { id: 'ORD-002', paciente: 'María Elena Rodríguez Díaz', pruebas: ['Perfil Lipídico'], fecha: '2026-06-10', estado: 'VIGENTE' },
-          { id: 'ORD-003', paciente: 'Pedro José Martínez Sánchez', pruebas: ['Examen General de Orina'], fecha: '2026-06-08', estado: 'ATENDIDA' }
-        ]);
+      .catch(err => {
+        console.error("Error al cargar el historial de órdenes:", err);
       });
   }, []);
 

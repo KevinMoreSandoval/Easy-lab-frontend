@@ -27,3 +27,14 @@ export const createOrden = async (data) => {
     body: JSON.stringify(data),
   });
 };
+
+export const getOrdenesByPacienteDni = async (dni) => {
+  return await apiRequest(`/ordenes/paciente/${dni}`);
+};
+
+export const cambiarEstadoOrden = async (id, estado) => {
+  return await apiRequest(`/ordenes/${id}/estado`, {
+    method: "PATCH",
+    body: JSON.stringify({ estado }),
+  });
+};

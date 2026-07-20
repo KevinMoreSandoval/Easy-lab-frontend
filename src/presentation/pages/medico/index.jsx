@@ -1,25 +1,29 @@
 import { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import styles from "./medicoDashboard.module.css";
 import { getOrdenes } from '../../../infrastructure/api/pacienteApi';
+import { getCitasPendientesMedico } from '../../../infrastructure/api/citaApi';
 
 export default function MedicoDashboard() {
   const [ordenes, setOrdenes] = useState([]);
+  const [citasPendientes, setCitasPendientes] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
+    // Cargar órdenes
     getOrdenes()
       .then(data => setOrdenes(data))
-      .catch(() => {
-        setOrdenes([
-          { id: 'ORD-001', paciente: 'Juan Carlos García López', pruebas: ['Hemograma Completo', 'Glucosa'], fechaEmision: '2026-06-11', estado: 'PENDIENTE' },
-          { id: 'ORD-002', paciente: 'María Elena Rodríguez Díaz', pruebas: ['Perfil Lipídico'], fechaEmision: '2026-06-10', estado: 'VIGENTE' },
-          { id: 'ORD-003', paciente: 'Pedro José Martínez Sánchez', pruebas: ['Examen General de Orina'], fechaEmision: '2026-06-08', estado: 'ATENDIDA' }
-        ]);
-      });
+      .catch(console.error);
+
+    // Cargar citas pendientes del médico
+    getCitasPendientesMedico()
+      .then(data => setCitasPendientes(data))
+      .catch(console.error);
   }, []);
 
-  const pendientes = ordenes.filter(o => (o.estado || '').toUpperCase() === 'PENDIENTE').length;
-  const atendidas = ordenes.filter(o => (o.estado || '').toUpperCase() === 'ATENDIDA').length;
-  const totalHoy = ordenes.length;
+  const pendientes = citasPendientes.length; // Citas pendientes
+  const atendidas = ordenes.length; // Órdenes generadas
+  const totalHoy = ordenes.filter(o => o.fechaEmision === new Date().toISOString().split('T')[0]).length;
 
   return (
     <>
@@ -38,7 +42,7 @@ export default function MedicoDashboard() {
 
         <div className={styles.statCard}>
           <div>
-            <div className={styles.statTitle}>Órdenes Pendientes</div>
+            <div className={styles.statTitle}>Citas Pendientes</div>
             <div className={styles.statValue}>{pendientes}</div>
           </div>
           <div className={`${styles.statIcon} ${styles.iconOrange}`}>
@@ -59,6 +63,43 @@ export default function MedicoDashboard() {
             </svg>
           </div>
         </div>
+      </div>
+
+      <div className={styles.tableCard} style={{ marginBottom: '20px' }}>
+        <h3 className={styles.tableTitle}>Mis Citas Pendientes</h3>
+        <table className={styles.table}>
+          <thead>
+            <tr>
+              <th>Paciente</th>
+              <th>DNI</th>
+              <th>Fecha</th>
+              <th>Hora</th>
+              <th>Acción</th>
+            </tr>
+          </thead>
+          <tbody>
+            {citasPendientes.length === 0 ? (
+              <tr><td colSpan="5" style={{ textAlign: 'center' }}>No tienes citas pendientes.</td></tr>
+            ) : (
+              citasPendientes.map(cita => (
+                <tr key={cita.id}>
+                  <td>{cita.pacienteNombre}</td>
+                  <td>{cita.pacienteDni}</td>
+                  <td>{cita.fecha}</td>
+                  <td>{cita.hora}</td>
+                  <td>
+                    <button 
+                      className={styles.btnAction} 
+                      onClick={() => navigate('/medico/crear-orden', { state: { pacienteDni: cita.pacienteDni, citaId: cita.id } })}
+                    >
+                      Atender
+                    </button>
+                  </td>
+                </tr>
+              ))
+            )}
+          </tbody>
+        </table>
       </div>
 
       <div className={styles.tableCard}>
