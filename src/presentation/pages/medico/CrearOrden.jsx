@@ -1,28 +1,26 @@
 // src/presentation/pages/medico/CrearOrden.jsx
 import { useState, useEffect } from 'react';
+import { useLocation, useNavigate } from 'react-router-dom';
 import styles from './crearOrden.module.css';
 import { createOrden } from '../../../infrastructure/api/pacienteApi';
 import { apiRequest } from '../../../infrastructure/api/authApi';
+import { cambiarEstadoCita } from '../../../infrastructure/api/citaApi';
 
 export default function CrearOrden() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const { pacienteDni, citaId } = location.state || {};
+
   const [pruebas, setPruebas] = useState([]);
   const [selectedPruebas, setSelectedPruebas] = useState([]);
   const [saving, setSaving] = useState(false);
 
   useEffect(() => {
-    // Load available tests from the backend
+    // Cargar pruebas disponibles desde el backend
     apiRequest('/pruebas')
       .then(data => setPruebas(Array.isArray(data) ? data : []))
-      .catch(() => {
-        // Fallback if backend not running
-        setPruebas([
-          { id: 1, nombre: 'Hemograma Completo' },
-          { id: 2, nombre: 'Perfil Lipídico' },
-          { id: 3, nombre: 'Glucosa' },
-          { id: 4, nombre: 'Examen General de Orina' },
-          { id: 5, nombre: 'Triglicéridos' },
-          { id: 6, nombre: 'Colesterol Total' },
-        ]);
+      .catch(err => {
+        console.error("Error al cargar las pruebas médicas:", err);
       });
   }, []);
 
@@ -48,9 +46,11 @@ export default function CrearOrden() {
         setSaving(true);
         try {
           await createOrden(req);
+          if (citaId) {
+            await cambiarEstadoCita(citaId, 'ATENDIDA');
+          }
           alert('Orden generada exitosamente');
-          e.target.reset();
-          setSelectedPruebas([]);
+          navigate('/medico/historial');
         } catch (err) {
           alert('Error al generar la orden: ' + (err.error || 'Error desconocido'));
         } finally {
@@ -59,7 +59,14 @@ export default function CrearOrden() {
       }}>
         <div className={styles.formGroup}>
           <label>DNI del Paciente</label>
-          <input name="paciente" type="text" placeholder="Ingrese el DNI del paciente" className={styles.input} required />
+          <input 
+            name="paciente" 
+            type="text" 
+            defaultValue={pacienteDni || ''} 
+            placeholder="Ingrese el DNI del paciente" 
+            className={styles.input} 
+            required 
+          />
         </div>
         
         <div className={styles.formGroup}>

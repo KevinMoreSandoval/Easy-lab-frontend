@@ -1,26 +1,30 @@
 
 
 import { useState, useEffect } from 'react';
+import { getCitas } from '../../../infrastructure/api/citaApi';
 import styles from "./recepcionDashboard.module.css";
 
 export default function RecepcionDashboard() {
   const [citas, setCitas] = useState([]);
 
   useEffect(() => {
-    const saved = localStorage.getItem('easylab_citas');
-    if (saved) {
-      setCitas(JSON.parse(saved));
-    } else {
-      setCitas([
-        { id: 1, paciente: "Juan Carlos García López", medico: "Dr. Roberto Sánchez", fecha: "2026-06-05", hora: "09:00", estado: "Programada" },
-        { id: 2, paciente: "María Elena Rodríguez Díaz", medico: "Dra. Ana López", fecha: "2026-06-05", hora: "10:30", estado: "Confirmada" },
-        { id: 3, paciente: "Pedro José Martínez Sánchez", medico: "Dr. Carlos Ruiz", fecha: "2026-06-05", hora: "11:00", estado: "Programada" }
-      ]);
-    }
+    const fetchDatos = async () => {
+      try {
+        const response = await getCitas();
+        setCitas(response);
+      } catch (error) {
+        console.error("Error fetching citas:", error);
+      }
+    };
+    fetchDatos();
   }, []);
 
-  const programadasHoy = citas.filter(c => c.estado === 'Programada').length;
-  const confirmadas = citas.filter(c => c.estado === 'Confirmada').length;
+  const hoyStr = new Date().toISOString().split('T')[0];
+  const citasHoy = citas.filter(c => c.fecha === hoyStr);
+  
+  const programadasHoy = citasHoy.filter(c => c.estado === 'PROGRAMADA').length;
+  const confirmadas = citas.filter(c => c.estado === 'CONFIRMADA' || c.estado === 'ATENDIDA').length;
+  const totalPacientesHoy = new Set(citasHoy.map(c => c.pacienteDni)).size;
 
   return (
     <div className={styles.layout}>
@@ -31,7 +35,7 @@ export default function RecepcionDashboard() {
           <div className={styles.statCard}>
             <div>
               <div className={styles.statTitle}>Pacientes registrados hoy</div>
-              <div className={styles.statValue}>8</div>
+              <div className={styles.statValue}>{totalPacientesHoy}</div>
             </div>
             <div className={`${styles.statIcon} ${styles.iconBlue}`}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '24px', height: '24px' }}>
@@ -55,7 +59,7 @@ export default function RecepcionDashboard() {
           <div className={styles.statCard}>
             <div>
               <div className={styles.statTitle}>Pacientes pendientes de llegada</div>
-              <div className={styles.statValue}>2</div>
+              <div className={styles.statValue}>{programadasHoy}</div>
             </div>
             <div className={`${styles.statIcon} ${styles.iconOrange}`}>
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" style={{ width: '24px', height: '24px' }}>
@@ -92,12 +96,12 @@ export default function RecepcionDashboard() {
             <tbody>
               {citas.map(cita => (
                 <tr key={cita.id}>
-                  <td>{cita.paciente}</td>
+                  <td>{cita.pacienteNombre}</td>
                   <td>{cita.fecha}</td>
                   <td>{cita.hora}</td>
-                  <td>{cita.medico}</td>
+                  <td>{cita.medicoNombre}</td>
                   <td>
-                    <span className={`${styles.badge} ${cita.estado === 'Confirmada' ? styles.badgeSuccess : styles.badgePrimary}`}>
+                    <span className={`${styles.badge} ${cita.estado === 'CONFIRMADA' || cita.estado === 'ATENDIDA' ? styles.badgeSuccess : styles.badgePrimary}`}>
                       {cita.estado}
                     </span>
                   </td>

@@ -2,11 +2,11 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './confirmacionLlegada.module.css';
-import { getPacienteByDni } from '../../../infrastructure/api/pacienteApi';
+import { getOrdenesByPacienteDni, cambiarEstadoOrden } from '../../../infrastructure/api/pacienteApi';
 
 export default function ConfirmacionLlegada() {
   const [dni, setDni] = useState('');
-  const [paciente, setPaciente] = useState(null);
+  const [orden, setOrden] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
@@ -16,17 +16,18 @@ export default function ConfirmacionLlegada() {
     setLoading(true);
     setError(null);
     try {
-      const data = await getPacienteByDni(dni.trim());
-      setPaciente({
-        nombre: data.nombreCompleto,
-        dni: data.dni,
-        horaCita: "09:00 AM",
-        medico: "Dr. Roberto Sánchez",
-        pruebas: ["Hemograma Completo", "Glucosa"]
-      });
+      const ordenes = await getOrdenesByPacienteDni(dni.trim());
+      const ordenPendiente = ordenes.find(o => o.estado === 'PENDIENTE');
+      
+      if (ordenPendiente) {
+        setOrden(ordenPendiente);
+      } else {
+        setError("El paciente no tiene órdenes médicas pendientes.");
+        setOrden(null);
+      }
     } catch (err) {
-      setError("No se encontró ningún paciente con ese DNI.");
-      setPaciente(null);
+      setError("Error al buscar las órdenes del paciente.");
+      setOrden(null);
     } finally {
       setLoading(false);
     }
@@ -56,15 +57,15 @@ export default function ConfirmacionLlegada() {
             <h3>Orden de Exámenes</h3>
           </div>
           <div class="content">
-            <div class="info-row"><span class="label">Paciente:</span> ${pacienteData.nombre}</div>
-            <div class="info-row"><span class="label">DNI:</span> ${pacienteData.dni}</div>
-            <div class="info-row"><span class="label">Médico asignado:</span> ${pacienteData.medico}</div>
-            <div class="info-row"><span class="label">Hora programada:</span> ${pacienteData.horaCita}</div>
+            <div class="info-row"><span class="label">Paciente:</span> ${pacienteData.paciente}</div>
+            <div class="info-row"><span class="label">DNI:</span> ${pacienteData.pacienteDni}</div>
+            <div class="info-row"><span class="label">Médico solicitante:</span> ${pacienteData.medico}</div>
+            <div class="info-row"><span class="label">Fecha emisión:</span> ${pacienteData.fechaEmision}</div>
             <div class="info-row"><span class="label">Pruebas solicitadas:</span> ${pacienteData.pruebas.join(', ')}</div>
             <div class="info-row"><span class="label">Estado:</span> Confirmado</div>
           </div>
           <div class="qr-code">
-            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${pacienteData.dni}-${pacienteData.nombre.replace(/\s+/g, '')}" alt="Código QR" />
+            <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=${pacienteData.numeroOrden}" alt="Código QR" />
             <p style="font-size: 14px; color: #555;">Código de seguimiento</p>
           </div>
           <div class="footer">
@@ -81,29 +82,16 @@ export default function ConfirmacionLlegada() {
     }, 500);
   };
 
-  const confirmarLlegada = () => {
-    // Buscar y actualizar estado en localStorage (Citas)
-    const savedCitas = localStorage.getItem('easylab_citas');
-    if (savedCitas) {
-      const citas = JSON.parse(savedCitas);
-      const nombrePacienteLower = paciente.nombre.toLowerCase();
-      
-      const nuevasCitas = citas.map(cita => {
-        const citaPacienteLower = cita.paciente.toLowerCase();
-        // Coincidencia parcial o exacta
-        if (nombrePacienteLower.includes(citaPacienteLower) || citaPacienteLower.includes(nombrePacienteLower)) {
-          return { ...cita, estado: 'Confirmada' };
-        }
-        return cita;
-      });
-      localStorage.setItem('easylab_citas', JSON.stringify(nuevasCitas));
+  const confirmarLlegada = async () => {
+    try {
+      await cambiarEstadoOrden(orden.id, 'VIGENTE');
+      imprimirOrden(orden);
+      setOrden(null);
+      setDni('');
+      alert("Llegada confirmada y orden impresa correctamente.");
+    } catch (err) {
+      alert("Error al confirmar la llegada: " + err.message);
     }
-    
-    // Imprimir orden
-    imprimirOrden(paciente);
-
-    setPaciente(null);
-    setDni('');
   };
 
   return (
@@ -139,29 +127,29 @@ export default function ConfirmacionLlegada() {
           <p style={{ color: '#dc2626', marginTop: '8px', fontSize: '0.9rem' }}>{error}</p>
         )}
 
-        {paciente && (
+        {orden && (
           <div className={styles.resultWrapper}>
             <div className={styles.resultCard}>
               <div className={styles.resultHeader}>
                 <div>
-                  <h3 className={styles.patientName}>{paciente.nombre}</h3>
-                  <p className={styles.patientDni}>DNI: {paciente.dni}</p>
+                  <h3 className={styles.patientName}>{orden.paciente}</h3>
+                  <p className={styles.patientDni}>DNI: {orden.pacienteDni}</p>
                 </div>
-                <span className={styles.badge}>Cita Pendiente</span>
+                <span className={styles.badge}>Orden Pendiente</span>
               </div>
               
               <div className={styles.infoGrid}>
                 <div>
-                  <span className={styles.infoLabel}>Médico asignado</span>
-                  <span className={styles.infoValue}>{paciente.medico}</span>
+                  <span className={styles.infoLabel}>Médico solicitante</span>
+                  <span className={styles.infoValue}>{orden.medico}</span>
                 </div>
                 <div>
-                  <span className={styles.infoLabel}>Hora programada</span>
-                  <span className={styles.infoValue}>{paciente.horaCita}</span>
+                  <span className={styles.infoLabel}>Fecha Emisión</span>
+                  <span className={styles.infoValue}>{orden.fechaEmision}</span>
                 </div>
                 <div className={styles.infoGridFull}>
                   <span className={styles.infoLabel}>Pruebas solicitadas</span>
-                  <span className={styles.infoValue}>{paciente.pruebas.join(', ')}</span>
+                  <span className={styles.infoValue}>{orden.pruebas.join(', ')}</span>
                 </div>
               </div>
 

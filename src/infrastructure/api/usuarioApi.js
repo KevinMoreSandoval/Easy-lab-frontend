@@ -4,6 +4,10 @@ export const getUsuarios = async () => {
   return await apiRequest("/admin/usuarios");
 };
 
+export const getMedicos = async () => {
+  return await apiRequest("/usuarios/medicos");
+};
+
 export const createUsuario = async (data) => {
   return await apiRequest("/admin/usuarios", {
     method: "POST",
