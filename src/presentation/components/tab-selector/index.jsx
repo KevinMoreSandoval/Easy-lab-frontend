@@ -1,9 +1,9 @@
 import { useState } from "react";
 import styles from "./tabSelector.module.css";
  
-const tabs = ["Paciente", "Médico", "Recepción"];
+const tabs = ["Médico", "Recepción", "Administración"];
  
-const TabSelector= ({ defaultTab = "Paciente", onChange })=> {
+const TabSelector= ({ defaultTab = "Médico", onChange })=> {
   const [activeTab, setActiveTab] = useState(defaultTab);
  
   const handleTabClick = (tab) => {
@@ -31,4 +31,3 @@ const TabSelector= ({ defaultTab = "Paciente", onChange })=> {
 }
 
 export default TabSelector
- 

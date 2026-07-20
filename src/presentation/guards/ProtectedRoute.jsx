@@ -5,8 +5,8 @@ import { useAuth } from "../../context/AuthContext";
  * Componente guard que protege rutas según el rol del usuario.
  *
  * Uso:
- *   <Route element={<ProtectedRoute allowedRoles={["PACIENTE"]} />}>
- *     <Route path="dashboard" element={<PacienteDashboard />} />
+ *   <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
+ *     <Route path="dashboard" element={<AdminDashboard />} />
  *   </Route>
  *
  * Comportamiento:

@@ -1,8 +1,17 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { Login } from "./presentation/pages/auth";
 import ProtectedRoute from "./presentation/guards/ProtectedRoute";
-import PacienteDashboard from "./presentation/pages/pacient";
+import AdminDashboard from "./presentation/pages/admin";
+import AdminLayout from "./presentation/pages/admin/AdminLayout";
+import Usuarios from "./presentation/pages/admin/Usuarios";
+import PruebasLaboratorio from "./presentation/pages/admin/PruebasLaboratorio";
+import CrearPrueba from "./presentation/pages/admin/CrearPrueba";
+import EditarPrueba from "./presentation/pages/admin/EditarPrueba";
 import MedicoDashboard from "./presentation/pages/medico";
+import MedicoLayout from './presentation/pages/medico/MedicoLayout';
+import CrearOrden from './presentation/pages/medico/CrearOrden';
+import HistorialOrdenes from './presentation/pages/medico/HistorialOrdenes';
+
 import RecepcionDashboard from "./presentation/pages/recepcionist";
 
 import RegistroPacientes from './presentation/pages/recepcionist/RegistroPacientes';
@@ -15,7 +24,7 @@ import RecepcionLayout from './presentation/pages/recepcionist/RecepcionLayout';
  *
  * Estructura:
  *  /login                    → Página de login (pública)
- *  /paciente/dashboard       → Dashboard Paciente (protegida, rol PACIENTE)
+ *  /admin/dashboard          → Dashboard Administración (protegida, rol ADMIN)
  *  /medico/dashboard         → Dashboard Médico (protegida, rol MEDICO)
  *  /recepcion/dashboard      → Dashboard Recepción (protegida, rol RECEPCION)
  *  /                         → Redirige a /login
@@ -28,23 +37,26 @@ function App() {
         {/* Ruta pública */}
         <Route path="/login" element={<Login />} />
 
-        {/* Rutas protegidas: Paciente */}
-        <Route element={<ProtectedRoute allowedRoles={["PACIENTE"]} />}>
-          <Route path="/paciente/dashboard" element={<PacienteDashboard />} />
+        {/* Rutas protegidas: Administración */}
+        <Route element={<ProtectedRoute allowedRoles={["ADMIN"]} />}>
+          <Route element={<AdminLayout />}>
+            <Route path="/admin/dashboard" element={<AdminDashboard />} />
+            <Route path="/admin/usuarios" element={<Usuarios />} />
+            <Route path="/admin/pruebas" element={<PruebasLaboratorio />} />
+            <Route path="/admin/crear-prueba" element={<CrearPrueba />} />
+            <Route path="/admin/editar-prueba/:id" element={<EditarPrueba />} />
+          </Route>
         </Route>
 
-        {/* Rutas protegidas: Médico */}
         <Route element={<ProtectedRoute allowedRoles={["MEDICO"]} />}>
-          <Route path="/medico/dashboard" element={<MedicoDashboard />} />
+          <Route element={<MedicoLayout />}>
+            <Route path="/medico/dashboard" element={<MedicoDashboard />} />
+            <Route path="/medico/crear-orden" element={<CrearOrden />} />
+            <Route path="/medico/historial-ordenes" element={<HistorialOrdenes />} />
+          </Route>
         </Route>
 
         {/* Rutas protegidas: Recepción */}
-        <Route element={<ProtectedRoute allowedRoles={["RECEPCION"]} />}>
-          <Route path="/recepcion/dashboard" element={<RecepcionDashboard />} />
-        </Route>
-
-
-       {/* Rutas protegidas: Recepción */}
         <Route element={<ProtectedRoute allowedRoles={["RECEPCION"]} />}>
           <Route element={<RecepcionLayout />}>
             <Route path="/recepcion/dashboard" element={<RecepcionDashboard />} />

@@ -11,13 +11,13 @@ import { apiRequest } from "../../../infrastructure/api/authApi";
  * Se usa tras el login exitoso para redirigir al flujo correcto.
  */
 const ROLE_ROUTES = {
-  PACIENTE: "/paciente/dashboard",
+  ADMIN: "/admin/dashboard",
   MEDICO: "/medico/dashboard",
   RECEPCION: "/recepcion/dashboard",
 };
 
 const LoginForm = () => {
-  const [activeTab, setActiveTab] = useState("Paciente");
+  const [activeTab, setActiveTab] = useState("Médico");
   const [identifier, setIdentifier] = useState("");
   const [password, setPassword] = useState("");
   const [rememberUser, setRememberUser] = useState(false);
